@@ -1,14 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Search from './components/Search';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
+import axios from 'axios';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newPerson, setNewPerson] = useState({ name: '', number: '' });
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    console.log('effect');
+    axios.get('http://localhost:3001/persons').then(response => {
+      console.log('promise fulfilled');
+      setPersons(response.data);
+    });
+  }, []);
+  console.log('render', persons.length, 'notes');
 
   const submitForm = event => {
     event.preventDefault();
@@ -22,13 +30,13 @@ const App = () => {
         name: newPerson.name,
         number: newPerson.number,
         id: persons.length + 1,
-      })
+      }),
     );
     setNewPerson({ name: '', number: '' });
   };
 
   const filteredPersons = persons.filter(person =>
-    person.name.toLowerCase().includes(search.toLowerCase())
+    person.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
